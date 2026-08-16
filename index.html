@@ -198,22 +198,22 @@
           <section class="battle-comments" aria-labelledby="battleCommentsTitle">
             <div class="battle-comments-heading">
               <h3 id="battleCommentsTitle">コメント</h3>
-              <span class="battle-comments-step">表示テスト</span>
+              <span class="battle-comments-step">ローカル表示</span>
             </div>
-            <div class="battle-comments-list" aria-live="polite">
+            <div id="battleCommentsList" class="battle-comments-list" aria-live="polite">
               <p class="battle-comments-empty">まだコメントはありません</p>
             </div>
             <div class="battle-comments-compose">
               <input
+                id="battleCommentInput"
                 type="text"
                 maxlength="80"
                 placeholder="コメントを入力"
                 aria-label="コメントを入力"
-                disabled
               >
-              <button type="button" disabled>送信</button>
+              <button id="battleCommentSendButton" type="button">送信</button>
             </div>
-            <p class="battle-comments-note">今回は表示だけ確認します。送信機能は次の段階で追加します。</p>
+            <p class="battle-comments-note">この段階では、自分の画面にだけ表示されます。</p>
           </section>
         </section>
 

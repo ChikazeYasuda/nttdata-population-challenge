@@ -193,6 +193,9 @@ const els = {
   gameStartIntroRule: document.querySelector("#gameStartIntroRule"),
   gameStartIntroProfile: document.querySelector("#gameStartIntroProfile"),
   playersList: document.querySelector("#playersList"),
+  battleCommentsList: document.querySelector("#battleCommentsList"),
+  battleCommentInput: document.querySelector("#battleCommentInput"),
+  battleCommentSendButton: document.querySelector("#battleCommentSendButton"),
   resultPanel: document.querySelector("#resultPanel"),
   resultTitle: document.querySelector("#resultTitle"),
   resultDetail: document.querySelector("#resultDetail"),
@@ -218,6 +221,7 @@ let gameStartIntroTimer = null;
 let gameStartIntroVisible = false;
 let lastProgressPlayerId = "";
 let audioCtx = null;
+let localBattleComments = [];
 let soundMuted = localStorage.getItem(SOUND_MUTED_KEY) === "1";
 
 sessionStorage.setItem("populationBlackjackPlayerId", currentPlayerId);
@@ -241,6 +245,64 @@ els.standButton.addEventListener("click", stand);
 els.rematchButton.addEventListener("click", rematchRoom);
 els.leaveRoomButton.addEventListener("click", () => window.location.reload());
 els.soundToggleButton.addEventListener("click", toggleSound);
+els.battleCommentSendButton.addEventListener("click", addLocalBattleComment);
+els.battleCommentInput.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter" || event.isComposing) return;
+  event.preventDefault();
+  addLocalBattleComment();
+});
+
+function addLocalBattleComment() {
+  const text = els.battleCommentInput.value.trim();
+  if (!text) return;
+
+  localBattleComments.push({
+    text: text.slice(0, 80),
+    time: new Date()
+  });
+
+  els.battleCommentInput.value = "";
+  renderLocalBattleComments();
+  els.battleCommentInput.focus();
+}
+
+function renderLocalBattleComments() {
+  els.battleCommentsList.replaceChildren();
+
+  if (localBattleComments.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "battle-comments-empty";
+    empty.textContent = "まだコメントはありません";
+    els.battleCommentsList.append(empty);
+    return;
+  }
+
+  for (const comment of localBattleComments) {
+    const item = document.createElement("div");
+    item.className = "battle-comment-item mine";
+
+    const meta = document.createElement("div");
+    meta.className = "battle-comment-meta";
+
+    const author = document.createElement("span");
+    author.textContent = "あなた";
+
+    const time = document.createElement("time");
+    time.textContent = comment.time.toLocaleTimeString("ja-JP", {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
+    const body = document.createElement("p");
+    body.textContent = comment.text;
+
+    meta.append(author, time);
+    item.append(meta, body);
+    els.battleCommentsList.append(item);
+  }
+
+  els.battleCommentsList.scrollTop = els.battleCommentsList.scrollHeight;
+}
 
 async function initializeFirebase() {
   try {
